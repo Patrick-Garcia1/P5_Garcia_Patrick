@@ -45,8 +45,6 @@ function lesProduits(produit) {
       titre.textContent = `${choix.name}`;
       prix.textContent = `${choix.price}`;
       description.textContent = `${choix.description}`;
-      // on ajoute le prix également dans le panier (ça servira pour le compteur total)
-      articleClient.prix = `${choix.price}`;
       // boucle pour chercher les couleurs pour chaque produit en fonction de sa clef/valeur (la logique: tableau dans un tableau = boucle dans boucle)
       for (let couleur of choix.colors) {
         // ajout des balises d'option couleur avec leur valeur
