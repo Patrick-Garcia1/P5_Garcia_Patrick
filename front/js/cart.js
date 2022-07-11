@@ -26,12 +26,13 @@ function affichagePanier(index) {
   // on récupère le panier converti
   let panier = JSON.parse(localStorage.getItem("panierStocké"));
   // si il y a un panier avec une taille differante de 0 (donc supérieure à 0)
-  if (panier && panier.length != 0) {
-    // zone de correspondance clef/valeur de l'api et du panier
+   if (panier && panier.length != 0) {
+    // zone de correspondance clef/valeur de l'api et du panier grâce à l'id produit choisit dans le localStorage
     for (let choix of panier) {
+      console.log(choix);
       for (let g = 0, h = index.length; g < h; g++) {
         if (choix._id === index[g]._id) {
-          // création de valeurs pour l'affichage
+          // création et ajout de valeurs à panier qui vont servir pour les valeurs dataset
           choix.name = index[g].name;
           choix.prix = index[g].price;
           choix.image = index[g].imageUrl;
@@ -40,7 +41,10 @@ function affichagePanier(index) {
         }
       }
     }
-    // créait l'affichage si les conditions sont présentes
+    // on joue affiche,  panier a des clefs/valeurs ajoutés que l'on a pas remonté dans le local storage et sont pourtant réèlles
+    // ici panier à les valeurs du local storage + les valeurs définies au dessus
+    //on demande à affiche() de jouer avec les données panier 
+    //les valeurs ajoutés à panier ont un scope agrandi puisque appelé via la fonction affiche() d'ailleur dans affiche() il n'y a pas d'appel à panier de local storage.
     affiche(panier);
   } else {
     // si il n'y a pas de panier on créait un H1 informatif et quantité appropriées
@@ -61,7 +65,7 @@ function affiche(indexé) {
   let zonePanier = document.querySelector("#cart__items");
   // on créait les affichages des produits du panier via un map et introduction de dataset dans le code
   zonePanier.innerHTML += indexé.map((choix) => 
-  `<article class="cart__item" data-id="${choix._id}" data-couleur="${choix.couleur}" data-quantité="${choix.quantité}"> 
+  `<article class="cart__item" data-id="${choix._id}" data-couleur="${choix.couleur}" data-quantité="${choix.quantité}" data-prix="${choix.prix}"> 
     <div class="cart__item__img">
       <img src="${choix.image}" alt="${choix.alt}">
     </div>
@@ -106,6 +110,8 @@ function modifQuantité() {
         ) {
           article.quantité = eq.target.value;
           localStorage.panierStocké = JSON.stringify(panier);
+          // on met à jour le dataset quantité
+          cart.dataset.quantité = eq.target.value;
           // on joue la fonction pour actualiser les données
           totalProduit();
         }
@@ -156,19 +162,19 @@ function suppression() {
 // fonction ajout nombre total produit et coût total
 //--------------------------------------------------------------
 function totalProduit() {
-  let panier = JSON.parse(localStorage.getItem("panierStocké"));
   // déclaration variable en tant que nombre
   let totalArticle = 0;
   // déclaration variable en tant que nombre
-  let prixCombiné = 0;
-  // déclaration variable en tant que nombre
   let totalPrix = 0;
-  // j'ajoute toutes les quantités d'article du panier et calcule la somme/prix total
-  for (let article of panier) {
-    totalArticle += JSON.parse(article.quantité);
-    prixCombiné = JSON.parse(article.quantité) * JSON.parse(article.prix);
-    totalPrix += prixCombiné;
-  }
+  // on pointe l'élément
+  const cart = document.querySelectorAll(".cart__item");
+  // pour chaque élément cart
+  cart.forEach((cart) => {
+    //je récupère les quantités des produits grâce au dataset
+    totalArticle += JSON.parse(cart.dataset.quantité);
+    // je créais un opérateur pour le total produit grâce au dataset
+    totalPrix += cart.dataset.quantité * cart.dataset.prix;
+  });
   // je pointe l'endroit d'affichage nombre d'article
   document.getElementById("totalQuantity").textContent = totalArticle;
   // je pointe l'endroit d'affichage du prix total
